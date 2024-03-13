@@ -9,7 +9,7 @@ defmodule StateMachines.Application do
   def start(_type, _args) do
     children = [
       {StateMachines.StateFunctions, [1, 2, 3, 4]},
-      {StateMachines.HandleEventFunction, []},
+      {StateMachines.HandleEventFunction, [1, 2, 3, 4]},
       {StateMachines.GenServer, []}
     ]
 
