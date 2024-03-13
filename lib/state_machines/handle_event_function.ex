@@ -54,8 +54,18 @@ defmodule StateMachines.HandleEventFunction do
       do_unlock()
       {:next_state, :open, %{data | buttons: []}, [{:state_timeout, 10_000, :lock}]}
     else
-      {:keep_state, %{data | buttons: new_buttons}}
+      {:keep_state, %{data | buttons: new_buttons}, 10_000}
     end
+  end
+
+  def handle_event(
+        :timeout,
+        _event_content,
+        :locked,
+        data
+      ) do
+    Logger.debug("input timeout, buttons are cleared")
+    {:keep_state, %{data | buttons: []}}
   end
 
   def handle_event(:state_timeout, :lock, :open, data) do
