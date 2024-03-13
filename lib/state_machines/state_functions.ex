@@ -15,11 +15,10 @@ defmodule StateMachines.StateFunctions do
     :gen_statem.call(__MODULE__, :code_length)
   end
 
-  def callback_mode, do: :state_functions
+  def callback_mode, do: [:state_functions, :state_enter]
 
   def init(code) when is_list(code) do
     Process.flag(:trap_exit, true)
-    do_lock()
     data = %{code: code, length: length(code), buttons: []}
     {:ok, :locked, data}
   end
@@ -37,6 +36,12 @@ defmodule StateMachines.StateFunctions do
     }
   end
 
+  def locked(:enter, _old_state, data) do
+    Logger.debug("enter locked state")
+    do_lock()
+    {:keep_state, data}
+  end
+
   def locked(:cast, {:button, button}, %{code: code, length: length, buttons: buttons} = data) do
     new_buttons =
       if length(buttons) < length do
@@ -46,8 +51,7 @@ defmodule StateMachines.StateFunctions do
       end ++ [button]
 
     if new_buttons == code do
-      do_unlock()
-      {:next_state, :open, %{data | buttons: []}, [{{:timeout, :open}, 10_000, :lock}]}
+      {:next_state, :open, %{data | buttons: []}}
     else
       {:keep_state, %{data | buttons: new_buttons}, 10_000}
     end
@@ -62,9 +66,14 @@ defmodule StateMachines.StateFunctions do
     handle_common(event_type, event_content, data)
   end
 
+  def open(:enter, _old_state, _data) do
+    Logger.debug("enter open state")
+    do_unlock()
+    {:keep_state_and_data, [{{:timeout, :open}, 10_000, :lock}]}
+  end
+
   def open({:timeout, :open} = event_type, :lock, data) do
     Logger.debug("#{inspect(event_type)}")
-    do_lock()
     # return {:keep_state, data} or :keep_state_and_data are the same
     {:next_state, :locked, data}
   end
@@ -81,6 +90,6 @@ defmodule StateMachines.StateFunctions do
     {:keep_state, data, [{:reply, from, length(code)}]}
   end
 
-  def do_lock(), do: IO.inspect("Lock")
-  def do_unlock(), do: IO.inspect("Unlock")
+  def do_lock(), do: Logger.info("Lock")
+  def do_unlock(), do: Logger.info("Unlock")
 end
