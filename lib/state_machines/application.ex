@@ -10,7 +10,7 @@ defmodule StateMachines.Application do
     children = [
       {StateMachines.StateFunctions, [1, 2, 3, 4]},
       {StateMachines.HandleEventFunction, [1, 2, 3, 4]},
-      {StateMachines.GenServer, []}
+      {StateMachines.GenServer, [1, 2, 3, 4]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

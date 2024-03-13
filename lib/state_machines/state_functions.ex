@@ -53,7 +53,7 @@ defmodule StateMachines.StateFunctions do
     if new_buttons == code do
       {:next_state, :open, %{data | buttons: []}}
     else
-      {:keep_state, %{data | buttons: new_buttons}, 10_000}
+      {:keep_state, %{data | buttons: new_buttons}, 30_000}
     end
   end
 
