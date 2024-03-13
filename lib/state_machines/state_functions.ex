@@ -47,7 +47,7 @@ defmodule StateMachines.StateFunctions do
 
     if new_buttons == code do
       do_unlock()
-      {:next_state, :open, %{data | buttons: []}, [{:state_timeout, 10_000, :lock}]}
+      {:next_state, :open, %{data | buttons: []}, [{{:timeout, :open}, 10_000, :lock}]}
     else
       {:keep_state, %{data | buttons: new_buttons}, 10_000}
     end
@@ -62,8 +62,8 @@ defmodule StateMachines.StateFunctions do
     handle_common(event_type, event_content, data)
   end
 
-  def open(:state_timeout, :lock, data) do
-    Logger.debug("state_timeout")
+  def open({:timeout, :open} = event_type, :lock, data) do
+    Logger.debug("#{inspect(event_type)}")
     do_lock()
     # return {:keep_state, data} or :keep_state_and_data are the same
     {:next_state, :locked, data}
