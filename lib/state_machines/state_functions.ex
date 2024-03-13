@@ -18,6 +18,7 @@ defmodule StateMachines.StateFunctions do
   def callback_mode, do: :state_functions
 
   def init(code) when is_list(code) do
+    Process.flag(:trap_exit, true)
     do_lock()
     data = %{code: code, length: length(code), buttons: []}
     {:ok, :locked, data}

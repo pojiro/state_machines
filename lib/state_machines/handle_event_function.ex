@@ -18,6 +18,7 @@ defmodule StateMachines.HandleEventFunction do
   def callback_mode, do: :handle_event_function
 
   def init(code) when is_list(code) do
+    Process.flag(:trap_exit, true)
     do_lock()
     data = %{code: code, length: length(code), buttons: []}
     {:ok, :locked, data}

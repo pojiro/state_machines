@@ -15,4 +15,8 @@ defmodule StateMachines do
   def hello do
     :world
   end
+
+  def stop_application() do
+    Application.stop(:state_machines)
+  end
 end
