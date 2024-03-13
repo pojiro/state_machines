@@ -70,7 +70,7 @@ defmodule StateMachines.StateFunctions do
   end
 
   def open(:cast, {:button, _}, data) do
-    {:next_state, :open, data}
+    {:keep_state, data, [:postpone]}
   end
 
   def open(event_type, event_content, data) do
